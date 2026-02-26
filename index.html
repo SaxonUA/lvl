@@ -9,10 +9,12 @@
       --save-color: #ffaa00;
       --success-color: #00ff95;
       --fail-color: #ff3c3c;
-      --card-bg: #121519;
+      --card-bg: rgba(18, 21, 25, 0.95);
       --view-width: 600px;
       --card-width: 200px;
       --card-gap: -40px;
+      --panel-shadow: 0 15px 35px rgba(0,0,0,0.7);
+      --card-border: 1px solid rgba(255,255,255,0.1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,18 +33,18 @@
     .stats-bar {
       display: flex;
       gap: 5px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       z-index: 10;
     }
     .stat-box {
-      background: rgba(18, 21, 25, 0.95);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--card-bg);
+      border: var(--card-border);
       border-top: 3px solid var(--accent);
       padding: 10px 25px;
       border-radius: 10px;
       text-align: center;
       min-width: 130px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+      box-shadow: var(--panel-shadow);
     }
     .stat-box.orange-style { border-top: 3px solid var(--save-color); }
     .stat-box.orange-style .stat-value { color: var(--save-color); }
@@ -57,6 +59,7 @@
       align-items: center;
       justify-content: center;
       mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+      margin-bottom: 10px;
     }
 
     .card-row {
@@ -72,7 +75,7 @@
       width: var(--card-width);
       height: 260px;
       background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.1);
+      border: var(--card-border);
       border-radius: 18px;
       margin-right: var(--card-gap);
       display: flex;
@@ -92,111 +95,88 @@
     .card.is-save.active { border-color: var(--save-color); box-shadow: 0 0 50px rgba(255, 170, 0, 0.3); }
     .card.prev, .card.next { opacity: 0.5; transform: scale(0.95); filter: grayscale(0.5); z-index: 10; }
 
-    /* Grid Styles */
+    /* Дизайн заголовків картки */
+    .card-header { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; height: 35px; margin-bottom: 5px; }
+    .step-text { font-family: 'Arial Black', sans-serif; font-size: 10px; color: var(--accent); text-transform: uppercase; text-align: left; }
+    .is-save .step-text { color: var(--save-color); }
+    .save-label { font-size: 9px; font-weight: 900; color: var(--save-color); text-transform: uppercase; text-align: center; flex-grow: 1; margin-top: 2px; }
+
+    .card-main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; }
+    .dmg-value { font-family: 'Arial Black', sans-serif; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; }
+    
+    .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
+    .tier-label { font-size: 10px; color: #777; font-weight: 600; text-transform: uppercase; }
+    .tier-value { font-family: 'Arial Black', sans-serif; font-size: 20px; color: #fff; }
+
+    /* Стиль нижнього блоку */
     .steps-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      grid-gap: 8px;
-      margin-top: 20px;
-      background: rgba(0,0,0,0.3);
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.05);
+      grid-gap: 10px;
+      background: rgba(18, 21, 25, 0.7);
+      padding: 15px;
+      border-radius: 15px;
+      border: var(--card-border);
+      box-shadow: var(--panel-shadow);
+      margin-top: 10px;
     }
     .grid-cell {
-      width: 45px;
-      height: 35px;
-      background: rgba(255,255,255,0.05);
+      width: 50px;
+      height: 40px;
+      background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Arial Black', sans-serif;
       font-size: 14px;
-      color: #666;
+      color: #555;
       position: relative;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
     }
-    .grid-cell.passed {
-      color: #444;
-      text-decoration: line-through;
-      background: rgba(0, 255, 149, 0.05);
-      border-color: rgba(0, 255, 149, 0.2);
+    /* Помаранчева обводка для 5 та 8 сходинок */
+    .grid-cell.is-permanent {
+      border: 2px solid var(--save-color);
+      background: rgba(255, 170, 0, 0.05);
     }
     .grid-cell.current {
       color: var(--accent);
       border-color: var(--accent);
       background: rgba(0, 242, 255, 0.1);
-      box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+      box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+      transform: scale(1.05);
     }
+    /* Стиль хрестика для виконаних */
+    .grid-cell.passed::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff3c3c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+      background-size: 70%;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0.8;
+    }
+    .grid-cell.passed { opacity: 0.4; filter: grayscale(1); }
 
     .progress-container {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      margin-top: 12px;
-      overflow: hidden;
-      display: none; 
+      width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; margin-top: 12px; overflow: hidden; display: none; 
     }
     .active .progress-container.has-data { display: block; }
-    
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      transition: width 0.4s ease, background 0.4s ease;
-    }
-    
-    .live-damage-text {
-      font-family: 'Arial Black', sans-serif;
-      font-size: 16px;
-      font-weight: 900;
-      margin-top: 5px;
-      display: none;
-    }
+    .progress-fill { height: 100%; width: 0%; transition: width 0.4s ease, background 0.4s ease; }
+    .live-damage-text { font-family: 'Arial Black', sans-serif; font-size: 16px; font-weight: 900; margin-top: 5px; display: none; }
     .active .live-damage-text.has-data { display: block; }
-
-    .tank-name-display {
-      font-size: 10px;
-      font-weight: 800;
-      color: #fff;
-      text-transform: uppercase;
-      margin-top: auto;
-      padding-bottom: 5px;
-      display: none;
-      letter-spacing: 0.5px;
-    }
+    .tank-name-display { font-size: 10px; font-weight: 800; color: #fff; text-transform: uppercase; margin-top: auto; padding-bottom: 5px; display: none; letter-spacing: 0.5px; }
     .active .tank-name-display.has-tank { display: block; }
 
     .stamp {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) rotate(-25deg) scale(3);
-      border: 6px double var(--fail-color);
-      color: var(--fail-color);
-      padding: 5px 15px;
-      font-family: 'Arial Black', sans-serif;
-      font-size: 24px;
-      text-transform: uppercase;
-      opacity: 0;
-      background: rgba(0,0,0,0.6);
-      transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 100;
-      pointer-events: none;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg) scale(3);
+      border: 6px double var(--fail-color); color: var(--fail-color); padding: 5px 15px; font-family: 'Arial Black', sans-serif;
+      font-size: 24px; text-transform: uppercase; opacity: 0; background: rgba(0,0,0,0.6); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; pointer-events: none;
     }
     .card.completed .stamp { opacity: 1; transform: translate(-50%, -50%) rotate(-25deg) scale(1); }
-
-    .card-header { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 25px; margin-bottom: 10px; }
-    .save-label { font-size: 10px; font-weight: 900; color: var(--save-color); text-transform: uppercase; }
-    .status-icon { font-size: 20px; }
-    .card-main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; }
-    .step-text { font-family: 'Arial Black', sans-serif; font-size: 13px; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
-    .is-save .step-text { color: var(--save-color); }
-    .dmg-value { font-family: 'Arial Black', sans-serif; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; }
-    .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
-    .tier-label { font-size: 10px; color: #777; font-weight: 600; }
-    .tier-value { font-family: 'Arial Black', sans-serif; font-size: 20px; color: #fff; }
     
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     .active .status-icon { animation: pulse 1.5s infinite; }
@@ -216,10 +196,10 @@
   <div class="grid-cell" id="gc-1">2</div>
   <div class="grid-cell" id="gc-2">3</div>
   <div class="grid-cell" id="gc-3">4</div>
-  <div class="grid-cell" id="gc-4">5</div>
+  <div class="grid-cell is-permanent" id="gc-4">5</div>
   <div class="grid-cell" id="gc-5">6</div>
   <div class="grid-cell" id="gc-6">7</div>
-  <div class="grid-cell" id="gc-7">8</div>
+  <div class="grid-cell is-permanent" id="gc-7">8</div>
   <div class="grid-cell" id="gc-8">9</div>
   <div class="grid-cell" id="gc-9">10</div>
 </div>
@@ -257,11 +237,11 @@
         card.innerHTML = `
           <div class="stamp">Виконано</div>
           <div class="card-header">
-            <div class="save-label">${step.save ? 'Безпечна' : ''}</div>
+            <div class="step-text">Сходинка ${step.s}</div>
+            <div class="save-label">${step.save ? 'Безпечна зона' : ''}</div>
             <div class="status-icon" id="icon-${i}">${step.save ? '🛡️' : ''}</div>
           </div>
           <div class="card-main">
-            <div class="step-text">Сходинка ${step.s}</div>
             <div class="dmg-value">${formatNum(step.dmg)}</div>
             <div id="prog-cont-${i}" class="progress-container">
               <div id="fill-${i}" class="progress-fill"></div>
@@ -270,7 +250,7 @@
             <div id="tank-${i}" class="tank-name-display"></div>
           </div>
           <div class="card-footer">
-            <div class="tier-label">LVL: <span class="tier-value">${step.t}</span></div>
+            <div class="tier-label">Рівень танку: <span class="tier-value">${step.t}</span></div>
           </div>
         `;
         row.appendChild(card);
@@ -287,7 +267,7 @@
         const icon = document.getElementById(`icon-${i}`);
         const gridCell = document.getElementById(`gc-${i}`);
         
-        // Оновлення блоку ячейок
+        // Оновлення нижньої сітки
         gridCell.classList.remove('passed', 'current');
         if (i < idx || (isFinished && i === 9)) {
           gridCell.classList.add('passed');
@@ -295,7 +275,7 @@
           gridCell.classList.add('current');
         }
 
-        // Оновлення карток
+        // Оновлення великих карток
         if (i === idx) {
           card.classList.add('active');
           if (isFinished && i === 9) card.classList.add('completed');

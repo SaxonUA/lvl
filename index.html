@@ -51,7 +51,7 @@
 
     .viewport {
       width: var(--view-width);
-      height: 320px;
+      height: 300px;
       position: relative;
       display: flex;
       align-items: center;
@@ -70,7 +70,7 @@
 
     .card {
       width: var(--card-width);
-      height: 280px;
+      height: 260px;
       background: var(--card-bg);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 18px;
@@ -78,7 +78,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 15px;
+      padding: 15px 15px;
       flex-shrink: 0;
       transition: all 0.6s ease;
       opacity: 0.2;
@@ -88,9 +88,48 @@
       overflow: hidden;
     }
 
-    .card.active { opacity: 1; transform: scale(1.1); border: 2px solid var(--accent); box-shadow: 0 0 50px rgba(0, 242, 255, 0.5); z-index: 50; filter: grayscale(0); }
-    .card.is-save.active { border-color: var(--save-color); box-shadow: 0 0 50px rgba(255, 170, 0, 0.5); }
+    .card.active { opacity: 1; transform: scale(1.1); border: 2px solid var(--accent); box-shadow: 0 0 50px rgba(0, 242, 255, 0.3); z-index: 50; filter: grayscale(0); }
+    .card.is-save.active { border-color: var(--save-color); box-shadow: 0 0 50px rgba(255, 170, 0, 0.3); }
     .card.prev, .card.next { opacity: 0.5; transform: scale(0.95); filter: grayscale(0.5); z-index: 10; }
+
+    /* Grid Styles */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 8px;
+      margin-top: 20px;
+      background: rgba(0,0,0,0.3);
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .grid-cell {
+      width: 45px;
+      height: 35px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Arial Black', sans-serif;
+      font-size: 14px;
+      color: #666;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .grid-cell.passed {
+      color: #444;
+      text-decoration: line-through;
+      background: rgba(0, 255, 149, 0.05);
+      border-color: rgba(0, 255, 149, 0.2);
+    }
+    .grid-cell.current {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(0, 242, 255, 0.1);
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+    }
 
     .progress-container {
       width: 100%;
@@ -119,7 +158,7 @@
     .active .live-damage-text.has-data { display: block; }
 
     .tank-name-display {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
       color: #fff;
       text-transform: uppercase;
@@ -127,7 +166,6 @@
       padding-bottom: 5px;
       display: none;
       letter-spacing: 0.5px;
-      text-shadow: 0 0 5px rgba(0,0,0,0.8);
     }
     .active .tank-name-display.has-tank { display: block; }
 
@@ -142,36 +180,49 @@
       font-size: 24px;
       text-transform: uppercase;
       opacity: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.6);
       transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       z-index: 100;
       pointer-events: none;
     }
-    .card.completed .stamp { opacity: 0.9; transform: translate(-50%, -50%) rotate(-25deg) scale(1); }
+    .card.completed .stamp { opacity: 1; transform: translate(-50%, -50%) rotate(-25deg) scale(1); }
 
     .card-header { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 25px; margin-bottom: 10px; }
     .save-label { font-size: 10px; font-weight: 900; color: var(--save-color); text-transform: uppercase; }
     .status-icon { font-size: 20px; }
     .card-main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; }
-    .step-text { font-family: 'Arial Black', sans-serif; font-size: 14px; font-weight: 900; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
+    .step-text { font-family: 'Arial Black', sans-serif; font-size: 13px; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
     .is-save .step-text { color: var(--save-color); }
-    .dmg-value { font-family: 'Arial Black', sans-serif; font-size: 52px; font-weight: 900; color: #fff; line-height: 1; }
-    .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; padding-bottom: 5px; }
-    .tier-label { font-size: 11px; color: #777; font-weight: 600; margin-bottom: 2px; }
-    .tier-value { font-family: 'Arial Black', sans-serif; font-size: 24px; font-weight: 700; color: #fff; }
+    .dmg-value { font-family: 'Arial Black', sans-serif; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; }
+    .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
+    .tier-label { font-size: 10px; color: #777; font-weight: 600; }
+    .tier-value { font-family: 'Arial Black', sans-serif; font-size: 20px; color: #fff; }
     
-    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     .active .status-icon { animation: pulse 1.5s infinite; }
   </style>
 </head>
 <body>
 
 <div class="stats-bar">
-  <div class="stat-box orange-style"><div class="stat-label">Всього боїв</div><div id="totalBattles" class="stat-value">0</div></div>
+  <div class="stat-box orange-style"><div class="stat-label">Бої</div><div id="totalBattles" class="stat-value">0</div></div>
   <div class="stat-box"><div class="stat-label">Вінрейт</div><div id="winRate" class="stat-value">0%</div></div>
 </div>
 
 <div class="viewport"><div class="card-row" id="cardRow"></div></div>
+
+<div class="steps-grid" id="stepsGrid">
+  <div class="grid-cell" id="gc-0">1</div>
+  <div class="grid-cell" id="gc-1">2</div>
+  <div class="grid-cell" id="gc-2">3</div>
+  <div class="grid-cell" id="gc-3">4</div>
+  <div class="grid-cell" id="gc-4">5</div>
+  <div class="grid-cell" id="gc-5">6</div>
+  <div class="grid-cell" id="gc-6">7</div>
+  <div class="grid-cell" id="gc-7">8</div>
+  <div class="grid-cell" id="gc-8">9</div>
+  <div class="grid-cell" id="gc-9">10</div>
+</div>
 
 <script>
   (function() {
@@ -206,7 +257,7 @@
         card.innerHTML = `
           <div class="stamp">Виконано</div>
           <div class="card-header">
-            <div class="save-label">${step.save ? 'Безпечна зона' : ''}</div>
+            <div class="save-label">${step.save ? 'Безпечна' : ''}</div>
             <div class="status-icon" id="icon-${i}">${step.save ? '🛡️' : ''}</div>
           </div>
           <div class="card-main">
@@ -219,8 +270,7 @@
             <div id="tank-${i}" class="tank-name-display"></div>
           </div>
           <div class="card-footer">
-            <div class="tier-label">Рівень танку:</div>
-            <div class="tier-value">${step.t}</div>
+            <div class="tier-label">LVL: <span class="tier-value">${step.t}</span></div>
           </div>
         `;
         row.appendChild(card);
@@ -231,9 +281,21 @@
     function updateCarousel(idx, isFinished) {
       const row = document.getElementById('cardRow');
       const cards = document.querySelectorAll('.card');
+      
       cards.forEach((card, i) => {
         card.classList.remove('active', 'prev', 'next', 'completed');
         const icon = document.getElementById(`icon-${i}`);
+        const gridCell = document.getElementById(`gc-${i}`);
+        
+        // Оновлення блоку ячейок
+        gridCell.classList.remove('passed', 'current');
+        if (i < idx || (isFinished && i === 9)) {
+          gridCell.classList.add('passed');
+        } else if (i === idx && !isFinished) {
+          gridCell.classList.add('current');
+        }
+
+        // Оновлення карток
         if (i === idx) {
           card.classList.add('active');
           if (isFinished && i === 9) card.classList.add('completed');
@@ -248,6 +310,7 @@
           icon.innerHTML = i < idx ? '✔️' : (STEPS[i].save ? '🛡️' : '');
         }
       });
+
       const cardMoveWidth = 160; 
       row.style.transform = `translateX(-${idx * cardMoveWidth}px)`;
       currentIdx = idx;
@@ -276,7 +339,6 @@
         txt.style.color = dynamicColor;
         if (liveDamage >= target) {
           fill.style.background = "var(--success-color)";
-          fill.style.boxShadow = "0 0 15px var(--success-color)";
           txt.style.color = "var(--success-color)";
         }
       } else {
@@ -285,7 +347,7 @@
       }
 
       if (tankDisplay) {
-        if (currentTankName && currentTankName.trim() !== "") {
+        if (currentTankName) {
           tankDisplay.textContent = currentTankName;
           tankDisplay.classList.add('has-tank');
         } else {
@@ -299,33 +361,20 @@
       ws.onmessage = (e) => {
         try {
           const p = JSON.parse(e.data);
-          
-          // 1. Обробка дамагу
           if (p.type === "trigger" && p.path === "battle.onDamage") {
             if (p.value?.attacker?.playerId === MY_PLAYER_ID) {
               liveDamage += Number(p.value.damage) || 0;
               updateLiveUI();
             }
           }
-          
-          // 2. Агресивний пошук назви танка
           if (p.path?.includes("vehicleName") || p.path?.includes("vehicle.name")) {
-              if (p.value) {
-                currentTankName = p.value;
-                updateLiveUI();
-              }
+              if (p.value) { currentTankName = p.value; updateLiveUI(); }
           }
-
-          // 3. Якщо почався бій, шукаємо танк в об'єкті гравця
           if (p.path === "battle.playerVehicle" && p.value?.name) {
-              currentTankName = p.value.name;
-              updateLiveUI();
+              currentTankName = p.value.name; updateLiveUI();
           }
-
-          // 4. Стан ангару
           if (p.type === "state" && p.path === "hangar.isInHangar" && p.value === true) {
-            liveDamage = 0;
-            updateLiveUI();
+            liveDamage = 0; updateLiveUI();
           }
         } catch(err) {}
       };

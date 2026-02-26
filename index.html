@@ -111,7 +111,7 @@
     
     .live-damage-text {
       font-family: 'Arial Black', sans-serif;
-      font-size: 16px; /* Збільшив шрифт для кращої читаємості */
+      font-size: 16px;
       font-weight: 900;
       margin-top: 5px;
       display: none;
@@ -121,13 +121,13 @@
     .tank-name-display {
       font-size: 11px;
       font-weight: 800;
-      color: #fff; /* Змінив на білий для контрасту */
+      color: #fff;
       text-transform: uppercase;
       margin-top: auto;
       padding-bottom: 5px;
       display: none;
       letter-spacing: 0.5px;
-      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+      text-shadow: 0 0 5px rgba(0,0,0,0.8);
     }
     .active .tank-name-display.has-tank { display: block; }
 
@@ -192,7 +192,6 @@
     let currentTankName = ""; 
     let isInitialized = false;
 
-    // Функція для форматування чисел з пробілом замість ком
     function formatNum(num) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     }
@@ -213,13 +212,11 @@
           <div class="card-main">
             <div class="step-text">Сходинка ${step.s}</div>
             <div class="dmg-value">${formatNum(step.dmg)}</div>
-            
             <div id="prog-cont-${i}" class="progress-container">
               <div id="fill-${i}" class="progress-fill"></div>
             </div>
             <div id="live-txt-${i}" class="live-damage-text">0</div>
             <div id="tank-${i}" class="tank-name-display"></div>
-            
           </div>
           <div class="card-footer">
             <div class="tier-label">Рівень танку:</div>
@@ -268,20 +265,15 @@
       if (liveDamage > 0) {
         progCont.classList.add('has-data');
         txt.classList.add('has-data');
-        
         const target = STEPS[currentIdx].dmg;
         const progressPercent = Math.min(100, (liveDamage / target) * 100);
         const hue = progressPercent * 1.2; 
         const dynamicColor = `hsl(${hue}, 100%, 50%)`;
-
         fill.style.width = progressPercent + "%";
         fill.style.background = dynamicColor;
         fill.style.boxShadow = `0 0 15px ${dynamicColor}`;
-        
-        // Використання нашої функції форматування
         txt.textContent = formatNum(liveDamage);
         txt.style.color = dynamicColor;
-
         if (liveDamage >= target) {
           fill.style.background = "var(--success-color)";
           fill.style.boxShadow = "0 0 15px var(--success-color)";
@@ -308,6 +300,7 @@
         try {
           const p = JSON.parse(e.data);
           
+          // 1. Обробка дамагу
           if (p.type === "trigger" && p.path === "battle.onDamage") {
             if (p.value?.attacker?.playerId === MY_PLAYER_ID) {
               liveDamage += Number(p.value.damage) || 0;
@@ -315,17 +308,23 @@
             }
           }
           
-          // Перевірка різних шляхів для отримання назви танку
-          if (p.path === "hangar.vehicleName" || p.path === "battle.vehicleName" || p.path === "vehicle.name") {
-            if (p.value && p.value !== currentTankName) {
+          // 2. Агресивний пошук назви танка
+          if (p.path?.includes("vehicleName") || p.path?.includes("vehicle.name")) {
+              if (p.value) {
                 currentTankName = p.value;
                 updateLiveUI();
-            }
+              }
           }
 
-          if (p.type === "state" && (p.path === "hangar.isInHangar" || p.path === "gui.isInHangar") && p.value === true) {
-            liveDamage = 0; 
-            // Не очищуємо назву танка одразу, щоб вона була в ангарі
+          // 3. Якщо почався бій, шукаємо танк в об'єкті гравця
+          if (p.path === "battle.playerVehicle" && p.value?.name) {
+              currentTankName = p.value.name;
+              updateLiveUI();
+          }
+
+          // 4. Стан ангару
+          if (p.type === "state" && p.path === "hangar.isInHangar" && p.value === true) {
+            liveDamage = 0;
             updateLiveUI();
           }
         } catch(err) {}

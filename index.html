@@ -92,28 +92,31 @@
     .card.is-save.active { border-color: var(--save-color); box-shadow: 0 0 50px rgba(255, 170, 0, 0.5); }
     .card.prev, .card.next { opacity: 0.5; transform: scale(0.95); filter: grayscale(0.5); z-index: 10; }
 
-    /* НОВИЙ ПРОГРЕС БАР */
+    /* ПРОГРЕС БАР (ПІД ДАМАГОМ) */
     .progress-container {
       width: 100%;
-      height: 8px;
+      height: 6px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      margin-top: 10px;
+      border-radius: 3px;
+      margin-top: 12px;
       overflow: hidden;
-      display: none; /* Тільки на активній */
+      display: none; 
     }
     .active .progress-container { display: block; }
+    
     .progress-fill {
       height: 100%;
       width: 0%;
       background: var(--accent);
       box-shadow: 0 0 10px var(--accent);
-      transition: width 0.3s ease;
+      transition: width 0.4s ease;
     }
     .is-save .progress-fill { background: var(--save-color); box-shadow: 0 0 10px var(--save-color); }
+    
     .live-damage-text {
       font-family: 'Arial Black', sans-serif;
-      font-size: 12px;
+      font-size: 14px;
+      font-weight: 900;
       color: var(--accent);
       margin-top: 5px;
       display: none;
@@ -165,7 +168,7 @@
 <script>
   (function() {
     const SHEET_ID = "17phnEn-NW-OnrZg4DcW65r-Xoq6ScsdVjS5yL0SS3fk";
-    const MY_PLAYER_ID = 594841106;
+    const MY_PLAYER_ID = 594760646; // Оновлений ID
     const WS_URL = "ws://localhost:38200";
 
     const STEPS = [
@@ -177,8 +180,8 @@
     ];
 
     let currentIdx = -1;
-    let isInitialized = false;
     let liveDamage = 0;
+    let isInitialized = false;
 
     function initCards() {
       const row = document.getElementById('cardRow');
@@ -196,10 +199,12 @@
           <div class="card-main">
             <div class="step-text">Сходинка ${step.s}</div>
             <div class="dmg-value">${step.dmg}</div>
+            
             <div class="progress-container">
               <div id="fill-${i}" class="progress-fill"></div>
             </div>
             <div id="live-txt-${i}" class="live-damage-text">0</div>
+            
           </div>
           <div class="card-footer">
             <div class="tier-label">Рівень танку:</div>
@@ -250,10 +255,13 @@
       if (liveDamage >= target) {
           fill.style.background = "var(--success-color)";
           txt.style.color = "var(--success-color)";
+          fill.style.boxShadow = "0 0 15px var(--success-color)";
+      } else {
+          fill.style.background = STEPS[currentIdx].save ? "var(--save-color)" : "var(--accent)";
+          txt.style.color = STEPS[currentIdx].save ? "var(--save-color)" : "var(--accent)";
       }
     }
 
-    // WebSocket для реального часу
     function connectWS() {
       const ws = new WebSocket(WS_URL);
       ws.onmessage = (e) => {

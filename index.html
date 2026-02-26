@@ -101,13 +101,12 @@
       overflow: hidden;
       display: none; 
     }
-    .active .progress-container { display: block; }
+    /* Показуємо лише в активній картці та якщо прогрес > 0 */
+    .active .progress-container.has-data { display: block; }
     
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: var(--fail-color);
-      box-shadow: 0 0 10px var(--fail-color);
       transition: width 0.4s ease, background 0.4s ease;
     }
     
@@ -115,11 +114,22 @@
       font-family: 'Arial Black', sans-serif;
       font-size: 14px;
       font-weight: 900;
-      color: #fff;
       margin-top: 5px;
       display: none;
     }
-    .active .live-damage-text { display: block; }
+    .active .live-damage-text.has-data { display: block; }
+
+    .tank-name-display {
+      font-size: 10px;
+      font-weight: 800;
+      color: #aaa;
+      text-transform: uppercase;
+      margin-top: auto;
+      padding-bottom: 5px;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .active .tank-name-display.has-tank { display: block; }
 
     .stamp {
       position: absolute;
@@ -142,11 +152,11 @@
     .card-header { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 25px; margin-bottom: 10px; }
     .save-label { font-size: 10px; font-weight: 900; color: var(--save-color); text-transform: uppercase; }
     .status-icon { font-size: 20px; }
-    .card-main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .card-main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; }
     .step-text { font-family: 'Arial Black', sans-serif; font-size: 14px; font-weight: 900; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
     .is-save .step-text { color: var(--save-color); }
     .dmg-value { font-family: 'Arial Black', sans-serif; font-size: 52px; font-weight: 900; color: #fff; line-height: 1; }
-    .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+    .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; padding-bottom: 5px; }
     .tier-label { font-size: 11px; color: #777; font-weight: 600; margin-bottom: 2px; }
     .tier-value { font-family: 'Arial Black', sans-serif; font-size: 24px; font-weight: 700; color: #fff; }
     
@@ -179,6 +189,7 @@
 
     let currentIdx = -1;
     let liveDamage = 0;
+    let currentTankName = ""; 
     let isInitialized = false;
 
     function initCards() {
@@ -197,10 +208,13 @@
           <div class="card-main">
             <div class="step-text">Сходинка ${step.s}</div>
             <div class="dmg-value">${step.dmg}</div>
-            <div class="progress-container">
+            
+            <div id="prog-cont-${i}" class="progress-container">
               <div id="fill-${i}" class="progress-fill"></div>
             </div>
             <div id="live-txt-${i}" class="live-damage-text">0</div>
+            <div id="tank-${i}" class="tank-name-display"></div>
+            
           </div>
           <div class="card-footer">
             <div class="tier-label">Рівень танку:</div>
@@ -235,33 +249,51 @@
       const cardMoveWidth = 160; 
       row.style.transform = `translateX(-${idx * cardMoveWidth}px)`;
       currentIdx = idx;
-      updateLiveBar();
+      updateLiveUI();
     }
 
-    function updateLiveBar() {
+    function updateLiveUI() {
       const fill = document.getElementById(`fill-${currentIdx}`);
       const txt = document.getElementById(`live-txt-${currentIdx}`);
-      if (!fill || !txt) return;
+      const progCont = document.getElementById(`prog-cont-${currentIdx}`);
+      const tankDisplay = document.getElementById(`tank-${currentIdx}`);
+      
+      if (!fill || !txt || !progCont) return;
 
-      const target = STEPS[currentIdx].dmg;
-      const progressPercent = Math.min(100, (liveDamage / target) * 100);
-      
-      // Обчислення кольору: від 0 (червоний) до 120 (зелений)
-      const hue = progressPercent * 1.2; 
-      const dynamicColor = `hsl(${hue}, 100%, 50%)`;
+      // Умова для дамагу: показувати тільки якщо > 0
+      if (liveDamage > 0) {
+        progCont.classList.add('has-data');
+        txt.classList.add('has-data');
+        
+        const target = STEPS[currentIdx].dmg;
+        const progressPercent = Math.min(100, (liveDamage / target) * 100);
+        const hue = progressPercent * 1.2; 
+        const dynamicColor = `hsl(${hue}, 100%, 50%)`;
 
-      fill.style.width = progressPercent + "%";
-      fill.style.background = dynamicColor;
-      fill.style.boxShadow = `0 0 15px ${dynamicColor}`;
-      
-      txt.textContent = liveDamage.toLocaleString();
-      txt.style.color = dynamicColor;
-      
-      // Якщо ціль досягнута, фіксуємо фірмовий зелений
-      if (liveDamage >= target) {
+        fill.style.width = progressPercent + "%";
+        fill.style.background = dynamicColor;
+        fill.style.boxShadow = `0 0 15px ${dynamicColor}`;
+        txt.textContent = liveDamage.toLocaleString();
+        txt.style.color = dynamicColor;
+
+        if (liveDamage >= target) {
           fill.style.background = "var(--success-color)";
           fill.style.boxShadow = "0 0 15px var(--success-color)";
           txt.style.color = "var(--success-color)";
+        }
+      } else {
+        progCont.classList.remove('has-data');
+        txt.classList.remove('has-data');
+      }
+
+      // Умова для танка: показувати тільки якщо назва не порожня
+      if (tankDisplay) {
+        if (currentTankName && currentTankName.trim() !== "") {
+          tankDisplay.textContent = currentTankName;
+          tankDisplay.classList.add('has-tank');
+        } else {
+          tankDisplay.classList.remove('has-tank');
+        }
       }
     }
 
@@ -270,15 +302,25 @@
       ws.onmessage = (e) => {
         try {
           const p = JSON.parse(e.data);
+          
           if (p.type === "trigger" && p.path === "battle.onDamage") {
             if (p.value?.attacker?.playerId === MY_PLAYER_ID) {
               liveDamage += Number(p.value.damage) || 0;
-              updateLiveBar();
+              updateLiveUI();
             }
           }
+          
+          if (p.path === "hangar.vehicleName" || p.path === "battle.vehicleName") {
+            if (p.value) {
+                currentTankName = p.value;
+                updateLiveUI();
+            }
+          }
+
           if (p.type === "state" && p.path === "hangar.isInHangar" && p.value === true) {
             liveDamage = 0; 
-            updateLiveBar();
+            currentTankName = ""; // Очищуємо при виході, щоб чекати нового вибору
+            updateLiveUI();
           }
         } catch(err) {}
       };

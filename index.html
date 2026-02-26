@@ -92,7 +92,6 @@
     .card.is-save.active { border-color: var(--save-color); box-shadow: 0 0 50px rgba(255, 170, 0, 0.5); }
     .card.prev, .card.next { opacity: 0.5; transform: scale(0.95); filter: grayscale(0.5); z-index: 10; }
 
-    /* ПРОГРЕС БАР (ПІД ДАМАГОМ) */
     .progress-container {
       width: 100%;
       height: 6px;
@@ -107,17 +106,16 @@
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-      transition: width 0.4s ease;
+      background: var(--fail-color);
+      box-shadow: 0 0 10px var(--fail-color);
+      transition: width 0.4s ease, background 0.4s ease;
     }
-    .is-save .progress-fill { background: var(--save-color); box-shadow: 0 0 10px var(--save-color); }
     
     .live-damage-text {
       font-family: 'Arial Black', sans-serif;
       font-size: 14px;
       font-weight: 900;
-      color: var(--accent);
+      color: #fff;
       margin-top: 5px;
       display: none;
     }
@@ -168,7 +166,7 @@
 <script>
   (function() {
     const SHEET_ID = "17phnEn-NW-OnrZg4DcW65r-Xoq6ScsdVjS5yL0SS3fk";
-    const MY_PLAYER_ID = 594760646; // Оновлений ID
+    const MY_PLAYER_ID = 594760646;
     const WS_URL = "ws://localhost:38200";
 
     const STEPS = [
@@ -199,12 +197,10 @@
           <div class="card-main">
             <div class="step-text">Сходинка ${step.s}</div>
             <div class="dmg-value">${step.dmg}</div>
-            
             <div class="progress-container">
               <div id="fill-${i}" class="progress-fill"></div>
             </div>
             <div id="live-txt-${i}" class="live-damage-text">0</div>
-            
           </div>
           <div class="card-footer">
             <div class="tier-label">Рівень танку:</div>
@@ -248,17 +244,24 @@
       if (!fill || !txt) return;
 
       const target = STEPS[currentIdx].dmg;
-      const progress = Math.min(100, (liveDamage / target) * 100);
-      fill.style.width = progress + "%";
-      txt.textContent = liveDamage.toLocaleString();
+      const progressPercent = Math.min(100, (liveDamage / target) * 100);
       
+      // Обчислення кольору: від 0 (червоний) до 120 (зелений)
+      const hue = progressPercent * 1.2; 
+      const dynamicColor = `hsl(${hue}, 100%, 50%)`;
+
+      fill.style.width = progressPercent + "%";
+      fill.style.background = dynamicColor;
+      fill.style.boxShadow = `0 0 15px ${dynamicColor}`;
+      
+      txt.textContent = liveDamage.toLocaleString();
+      txt.style.color = dynamicColor;
+      
+      // Якщо ціль досягнута, фіксуємо фірмовий зелений
       if (liveDamage >= target) {
           fill.style.background = "var(--success-color)";
-          txt.style.color = "var(--success-color)";
           fill.style.boxShadow = "0 0 15px var(--success-color)";
-      } else {
-          fill.style.background = STEPS[currentIdx].save ? "var(--save-color)" : "var(--accent)";
-          txt.style.color = STEPS[currentIdx].save ? "var(--save-color)" : "var(--accent)";
+          txt.style.color = "var(--success-color)";
       }
     }
 

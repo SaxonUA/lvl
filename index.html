@@ -101,7 +101,6 @@
       overflow: hidden;
       display: none; 
     }
-    /* Показуємо лише в активній картці та якщо прогрес > 0 */
     .active .progress-container.has-data { display: block; }
     
     .progress-fill {
@@ -112,7 +111,7 @@
     
     .live-damage-text {
       font-family: 'Arial Black', sans-serif;
-      font-size: 14px;
+      font-size: 16px; /* Збільшив шрифт для кращої читаємості */
       font-weight: 900;
       margin-top: 5px;
       display: none;
@@ -120,14 +119,15 @@
     .active .live-damage-text.has-data { display: block; }
 
     .tank-name-display {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
-      color: #aaa;
+      color: #fff; /* Змінив на білий для контрасту */
       text-transform: uppercase;
       margin-top: auto;
       padding-bottom: 5px;
       display: none;
       letter-spacing: 0.5px;
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
     }
     .active .tank-name-display.has-tank { display: block; }
 
@@ -192,6 +192,11 @@
     let currentTankName = ""; 
     let isInitialized = false;
 
+    // Функція для форматування чисел з пробілом замість ком
+    function formatNum(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
     function initCards() {
       const row = document.getElementById('cardRow');
       row.innerHTML = '';
@@ -207,7 +212,7 @@
           </div>
           <div class="card-main">
             <div class="step-text">Сходинка ${step.s}</div>
-            <div class="dmg-value">${step.dmg}</div>
+            <div class="dmg-value">${formatNum(step.dmg)}</div>
             
             <div id="prog-cont-${i}" class="progress-container">
               <div id="fill-${i}" class="progress-fill"></div>
@@ -260,7 +265,6 @@
       
       if (!fill || !txt || !progCont) return;
 
-      // Умова для дамагу: показувати тільки якщо > 0
       if (liveDamage > 0) {
         progCont.classList.add('has-data');
         txt.classList.add('has-data');
@@ -273,7 +277,9 @@
         fill.style.width = progressPercent + "%";
         fill.style.background = dynamicColor;
         fill.style.boxShadow = `0 0 15px ${dynamicColor}`;
-        txt.textContent = liveDamage.toLocaleString();
+        
+        // Використання нашої функції форматування
+        txt.textContent = formatNum(liveDamage);
         txt.style.color = dynamicColor;
 
         if (liveDamage >= target) {
@@ -286,7 +292,6 @@
         txt.classList.remove('has-data');
       }
 
-      // Умова для танка: показувати тільки якщо назва не порожня
       if (tankDisplay) {
         if (currentTankName && currentTankName.trim() !== "") {
           tankDisplay.textContent = currentTankName;
@@ -310,16 +315,17 @@
             }
           }
           
-          if (p.path === "hangar.vehicleName" || p.path === "battle.vehicleName") {
-            if (p.value) {
+          // Перевірка різних шляхів для отримання назви танку
+          if (p.path === "hangar.vehicleName" || p.path === "battle.vehicleName" || p.path === "vehicle.name") {
+            if (p.value && p.value !== currentTankName) {
                 currentTankName = p.value;
                 updateLiveUI();
             }
           }
 
-          if (p.type === "state" && p.path === "hangar.isInHangar" && p.value === true) {
+          if (p.type === "state" && (p.path === "hangar.isInHangar" || p.path === "gui.isInHangar") && p.value === true) {
             liveDamage = 0; 
-            currentTankName = ""; // Очищуємо при виході, щоб чекати нового вибору
+            // Не очищуємо назву танка одразу, щоб вона була в ангарі
             updateLiveUI();
           }
         } catch(err) {}

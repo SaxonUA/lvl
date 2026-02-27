@@ -5,8 +5,8 @@
   <title>WoT Ultimate HUD · Strict Logic</title>
   <style>
     :root {
-      --accent: #00f2ff;
-      --save-color: #ffaa00;
+      --accent: #00f2ff; /* Основний неоновий блакитний */
+      --save-color: #ffaa00; /* Помаранчевий тільки для безпечних зон */
       --success-color: #00ff95;
       --fail-color: #ff3c3c;
       --card-bg: rgba(18, 21, 25, 0.95);
@@ -30,26 +30,44 @@
       height: 100vh;
     }
 
+    /* Оновлений блок статистики */
     .stats-bar {
       display: flex;
-      gap: 5px;
-      margin-bottom: 20px;
+      gap: 15px; /* Збільшено відступ між блоками */
+      margin-bottom: 25px;
       z-index: 10;
     }
     .stat-box {
       background: var(--card-bg);
       border: var(--card-border);
-      border-top: 3px solid var(--accent);
-      padding: 10px 25px;
-      border-radius: 10px;
+      border-top: 3px solid #9900ff; /* Тепер обидва блоки мають однаковий акцент */
+      padding: 12px 30px;
+      border-radius: 12px;
       text-align: center;
-      min-width: 130px;
-      box-shadow: var(--panel-shadow);
+      min-width: 140px;
+      box-shadow: 0 10px 20px rgba(0, 242, 255, 0.1), var(--panel-shadow);
+      transition: all 0.3s ease;
     }
-    .stat-box.orange-style { border-top: 3px solid var(--save-color); }
-    .stat-box.orange-style .stat-value { color: var(--save-color); }
-    .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px; }
-    .stat-value { font-family: 'Arial Black', sans-serif; font-size: 28px; font-weight: 900; color: var(--accent); }
+    .stat-label { 
+      font-size: 10px; 
+      color: rgba(255,255,255,0.5); 
+      text-transform: uppercase; 
+      letter-spacing: 2px; 
+      margin-bottom: 4px; 
+    }
+    .stat-value { 
+      font-family: 'Arial Black', sans-serif; 
+      font-size: 32px; 
+      font-weight: 900; 
+      color: #fff; /* Білий колір для цифр виглядає солідніше */
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+
+    /* Спеціальний колір для Вінрейту, якщо потрібно підкреслити успіх */
+    #winRate.high-wr {
+      color: var(--success-color);
+      text-shadow: 0 0 10px rgba(0, 255, 149, 0.3);
+    }
 
     .viewport {
       width: var(--view-width);
@@ -100,10 +118,7 @@
     .is-save .step-text { color: var(--save-color); }
     
     .card-main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; }
-    
-    /* Нове положення напису Безпечна зона */
     .save-label { font-size: 14px; font-weight: 900; color: var(--save-color); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
-    
     .dmg-value { font-family: 'Arial Black', sans-serif; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; }
     
     .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
@@ -184,7 +199,7 @@
 <body>
 
 <div class="stats-bar">
-  <div class="stat-box orange-style"><div class="stat-label">Бої</div><div id="totalBattles" class="stat-value">0</div></div>
+  <div class="stat-box"><div class="stat-label">Бої</div><div id="totalBattles" class="stat-value">0</div></div>
   <div class="stat-box"><div class="stat-label">Вінрейт</div><div id="winRate" class="stat-value">0%</div></div>
 </div>
 
@@ -276,7 +291,7 @@
         if (i === idx) {
           card.classList.add('active');
           if (isFinished && i === 9) card.classList.add('completed');
-          icon.innerHTML = (isFinished && i === 9) ? '👑' : '⚔';
+          icon.innerHTML = (isFinished && i === 9) ? '👑' : '🎯';
         } else if (i === idx - 1) {
           card.classList.add('prev');
           icon.innerHTML = '✔️';
@@ -392,7 +407,10 @@
         const wr = data.length > 0 ? Math.round((wins / data.length) * 100) : 0;
         const wrEl = document.getElementById('winRate');
         wrEl.textContent = wr + '%';
-        wrEl.style.color = wr >= 50 ? 'var(--success-color)' : 'var(--fail-color)';
+        
+        // Додаємо клас для гарного відображення високого вінрейту
+        if (wr >= 50) wrEl.classList.add('high-wr');
+        else wrEl.classList.remove('high-wr');
 
         if (!isInitialized) initCards();
         updateCarousel(tempIdx, isFinished);

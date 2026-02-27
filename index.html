@@ -95,20 +95,21 @@
     .card.is-save.active { border-color: var(--save-color); box-shadow: 0 0 50px rgba(255, 170, 0, 0.3); }
     .card.prev, .card.next { opacity: 0.5; transform: scale(0.95); filter: grayscale(0.5); z-index: 10; }
 
-    /* Дизайн заголовків картки */
-    .card-header { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; height: 35px; margin-bottom: 5px; }
-    .step-text { font-family: 'Arial Black', sans-serif; font-size: 10px; color: var(--accent); text-transform: uppercase; text-align: left; }
+    .card-header { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; height: 25px; margin-bottom: 5px; }
+    .step-text { font-family: 'Arial Black', sans-serif; font-size: 15px; color: var(--accent); text-transform: uppercase; text-align: left; }
     .is-save .step-text { color: var(--save-color); }
-    .save-label { font-size: 9px; font-weight: 900; color: var(--save-color); text-transform: uppercase; text-align: center; flex-grow: 1; margin-top: 2px; }
-
+    
     .card-main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; }
+    
+    /* Нове положення напису Безпечна зона */
+    .save-label { font-size: 14px; font-weight: 900; color: var(--save-color); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
+    
     .dmg-value { font-family: 'Arial Black', sans-serif; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; }
     
     .card-footer { width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
-    .tier-label { font-size: 10px; color: #777; font-weight: 600; text-transform: uppercase; }
+    .tier-label { font-size: 16px; color: #777; font-weight: 600; text-transform: uppercase; }
     .tier-value { font-family: 'Arial Black', sans-serif; font-size: 20px; color: #fff; }
 
-    /* Стиль нижнього блоку */
     .steps-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -135,7 +136,6 @@
       position: relative;
       transition: all 0.4s ease;
     }
-    /* Помаранчева обводка для 5 та 8 сходинок */
     .grid-cell.is-permanent {
       border: 2px solid var(--save-color);
       background: rgba(255, 170, 0, 0.05);
@@ -147,7 +147,6 @@
       box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
       transform: scale(1.05);
     }
-    /* Стиль хрестика для виконаних */
     .grid-cell.passed::after {
       content: '';
       position: absolute;
@@ -238,10 +237,10 @@
           <div class="stamp">Виконано</div>
           <div class="card-header">
             <div class="step-text">Сходинка ${step.s}</div>
-            <div class="save-label">${step.save ? 'Безпечна зона' : ''}</div>
             <div class="status-icon" id="icon-${i}">${step.save ? '🛡️' : ''}</div>
           </div>
           <div class="card-main">
+            <div class="save-label">${step.save ? 'Безпечна зона' : ''}</div>
             <div class="dmg-value">${formatNum(step.dmg)}</div>
             <div id="prog-cont-${i}" class="progress-container">
               <div id="fill-${i}" class="progress-fill"></div>
@@ -267,7 +266,6 @@
         const icon = document.getElementById(`icon-${i}`);
         const gridCell = document.getElementById(`gc-${i}`);
         
-        // Оновлення нижньої сітки
         gridCell.classList.remove('passed', 'current');
         if (i < idx || (isFinished && i === 9)) {
           gridCell.classList.add('passed');
@@ -275,11 +273,10 @@
           gridCell.classList.add('current');
         }
 
-        // Оновлення великих карток
         if (i === idx) {
           card.classList.add('active');
           if (isFinished && i === 9) card.classList.add('completed');
-          icon.innerHTML = (isFinished && i === 9) ? '👑' : '🎯';
+          icon.innerHTML = (isFinished && i === 9) ? '👑' : '⚔';
         } else if (i === idx - 1) {
           card.classList.add('prev');
           icon.innerHTML = '✔️';

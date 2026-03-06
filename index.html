@@ -5,8 +5,8 @@
   <title>WoT Ultimate HUD · Strict Logic</title>
   <style>
     :root {
-      --accent: #00f2ff; /* Основний неоновий блакитний */
-      --save-color: #ffaa00; /* Помаранчевий тільки для безпечних зон */
+      --accent: #00f2ff;
+      --save-color: #ffaa00;
       --success-color: #00ff95;
       --fail-color: #ff3c3c;
       --card-bg: rgba(18, 21, 25, 0.95);
@@ -30,17 +30,16 @@
       height: 100vh;
     }
 
-    /* Оновлений блок статистики */
     .stats-bar {
       display: flex;
-      gap: 15px; /* Збільшено відступ між блоками */
+      gap: 15px;
       margin-bottom: 25px;
       z-index: 10;
     }
     .stat-box {
       background: var(--card-bg);
       border: var(--card-border);
-      border-top: 3px solid #02fac0; /* Тепер обидва блоки мають однаковий акцент */
+      border-top: 3px solid #02fac0;
       padding: 12px 30px;
       border-radius: 12px;
       text-align: center;
@@ -59,11 +58,10 @@
       font-family: 'Arial Black', sans-serif; 
       font-size: 32px; 
       font-weight: 900; 
-      color: #fff; /* Білий колір для цифр виглядає солідніше */
+      color: #fff;
       text-shadow: 0 0 10px rgba(255,255,255,0.2);
     }
 
-    /* Спеціальний колір для Вінрейту, якщо потрібно підкреслити успіх */
     #winRate.high-wr {
       color: var(--success-color);
       text-shadow: 0 0 10px rgba(0, 255, 149, 0.3);
@@ -208,7 +206,7 @@
 <div class="steps-grid" id="stepsGrid">
   <div class="grid-cell" id="gc-0">1</div>
   <div class="grid-cell" id="gc-1">2</div>
-  <div class="grid-cell" id="gc-2">3</div>
+  <div class="grid-cell is-permanent" id="gc-2">3</div>
   <div class="grid-cell" id="gc-3">4</div>
   <div class="grid-cell is-permanent" id="gc-4">5</div>
   <div class="grid-cell" id="gc-5">6</div>
@@ -226,10 +224,11 @@
 
     const STEPS = [
       {s:1, t:4, dmg:1000, save:false}, {s:2, t:5, dmg:1500, save:false},
-      {s:3, t:6, dmg:2000, save:false}, {s:4, t:7, dmg:2500, save:false},
-      {s:5, t:8, dmg:3000, save:true }, {s:6, t:9, dmg:3500, save:false},
-      {s:7, t:10, dmg:4500, save:false}, {s:8, t:10, dmg:5000, save:true },
-      {s:9, t:11, dmg:5500, save:false}, {s:10, t:11, dmg:6000, save:false}
+      {s:3, t:6, dmg:2000, save:true }, // Змінено на true (безпечна зона)
+      {s:4, t:7, dmg:2500, save:false}, {s:5, t:8, dmg:3000, save:true }, 
+      {s:6, t:9, dmg:3500, save:false}, {s:7, t:10, dmg:4500, save:false}, 
+      {s:8, t:10, dmg:5000, save:true }, {s:9, t:11, dmg:5500, save:false}, 
+      {s:10, t:11, dmg:6000, save:false}
     ];
 
     let currentIdx = -1;
@@ -408,7 +407,6 @@
         const wrEl = document.getElementById('winRate');
         wrEl.textContent = wr + '%';
         
-        // Додаємо клас для гарного відображення високого вінрейту
         if (wr >= 50) wrEl.classList.add('high-wr');
         else wrEl.classList.remove('high-wr');
 
